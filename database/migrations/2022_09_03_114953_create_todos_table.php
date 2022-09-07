@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,15 +15,18 @@ return new class extends Migration
     public function up()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::create('personal_access_tokens', function (Blueprint $table) {
+        Schema::create('todos', function (Blueprint $table) {
             $table->id();
-            $table->morphs('tokenable');
-            $table->string('name');
-            $table->string('token', 64)->unique();
-            $table->text('abilities')->nullable();
-            $table->timestamp('last_used_at')->nullable();
-            $table->timestamp('expires_at')->nullable();
+            $table->foreignIdFor(User::class)->constrained()->restrictOnUpdate()->cascadeOnDelete();
+            $table->boolean('is_private')->default(false);
+            $table->uuid()->unique();
+            $table->string('state', 190)->index();
+            $table->string('name', 190)->index();
+            $table->string('slug', 190)->index();
+            $table->text('description')->nullable();
+            $table->timestamp('checkmark_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::enableForeignKeyConstraints();
     }
@@ -35,7 +39,7 @@ return new class extends Migration
     public function down()
     {
         Schema::disableForeignKeyConstraints();
-        Schema::dropIfExists('personal_access_tokens');
+        Schema::dropIfExists('todos');
         Schema::enableForeignKeyConstraints();
     }
 };
