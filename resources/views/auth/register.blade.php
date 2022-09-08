@@ -8,15 +8,32 @@
         <h2 class="mt-6 text-3xl font-extrabold text-gray-900">Register your account</h2>
     </div>
 
-    <div class="mt-8">
+    @if ($errors->has('errorMessage'))
+        <div class="mt-8">
+            <x-alert-danger>
+                <x-slot:title>{{ $errors->default->first('errorMessage') ?? null }}</x-slot:title>
+                <x-slot:description>{{ $errors->default->first('errorDescription') ?? null }}</x-slot:description>
+            </x-alert-danger>
+        </div>
+    @endif
+    @if (session('successMessage'))
+        <div class="mt-8">
+            <x-alert-success>
+                <x-slot:title>{{ session('successMessage') ?? null }}</x-slot:title>
+                <x-slot:description>{{ session('successDescription') ?? null }}</x-slot:description>
+            </x-alert-success>
+        </div>
+    @endif
+    <div class="mt-2">
         <form action="{{ route('web.account.register') }}" method="POST" class="space-y-6">
             @csrf
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700"> Email </label>
+            <div
+                class="px-3 py-2 border {{ $errors->has('email') ? 'border-red-500' : 'border-gray-300' }} rounded-md shadow-sm focus-within:ring-1 focus-within:ring-indigo-600 focus-within:border-indigo-600">
+                <label for="email" class="block text-xs font-medium text-gray-900"> Email </label>
                 <div class="mt-1">
                     <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="on"
                         required
-                        class="appearance-none block w-full px-3 py-2 border {{ $errors->has('email') ? 'border-red-500' : 'border-gray-300' }} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        class="block w-full p-0 text-gray-900 placeholder-gray-500 border-0 focus:ring-0 sm:text-sm">
                 </div>
                 @error('email')
                     <div class="mt-1">
@@ -27,12 +44,13 @@
                 @enderror
             </div>
 
-            <div>
-                <label for="username" class="block text-sm font-medium text-gray-700"> Username </label>
+            <div
+                class="px-3 py-2 border {{ $errors->has('username') ? 'border-red-500' : 'border-gray-300' }} rounded-md shadow-sm focus-within:ring-1 focus-within:ring-indigo-600 focus-within:border-indigo-600 space-y-1">
+                <label for="username" class="block text-xs font-medium text-gray-900"> Username </label>
                 <div class="mt-1">
                     <input id="username" name="username" type="text" value="{{ old('username') }}" autocomplete="on"
                         required
-                        class="appearance-none block w-full px-3 py-2 border {{ $errors->has('username') ? 'border-red-500' : 'border-gray-300' }} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        class="block w-full p-0 text-gray-900 placeholder-gray-500 border-0 focus:ring-0 sm:text-sm">
                 </div>
                 @error('username')
                     <div class="mt-1">
@@ -43,12 +61,13 @@
                 @enderror
             </div>
 
-            <div class="space-y-1" x-data="{ show: true }">
-                <label for="password" class="block text-sm font-medium text-gray-700"> Password </label>
+            <div class="px-3 py-2 border {{ $errors->has('password') ? 'border-red-500' : 'border-gray-300' }} rounded-md shadow-sm focus-within:ring-1 focus-within:ring-indigo-600 focus-within:border-indigo-600 space-y-1"
+                x-data="{ show: true }">
+                <label for="password" class="block text-xs font-medium text-gray-900"> Password </label>
                 <div class="relative mt-1">
                     <input id="password" name="password" :type="show ? 'password' : 'text'" value=""
                         autocomplete="on" required
-                        class="appearance-none block w-full px-3 py-2 border {{ $errors->has('password') ? 'border-red-500' : 'border-gray-300' }} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        class="block w-full p-0 text-gray-900 placeholder-gray-500 border-0 focus:ring-0 sm:text-sm">
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 text-sm leading-5 cursor-pointer"
                         x-on:click="show = !show">
 
@@ -77,13 +96,14 @@
                 @enderror
             </div>
 
-            <div class="space-y-1" x-data="{ show: true }">
-                <label for="password_confirmation" class="block text-sm font-medium text-gray-700"> Confirm Password
+            <div class="px-3 py-2 border {{ $errors->has('password_confirmation') ? 'border-red-500' : 'border-gray-300' }} rounded-md shadow-sm focus-within:ring-1 focus-within:ring-indigo-600 focus-within:border-indigo-600 space-y-1"
+                x-data="{ show: true }">
+                <label for="password_confirmation" class="block text-xs font-medium text-gray-900"> Confirm Password
                 </label>
                 <div class="relative mt-1">
                     <input id="password_confirmation" name="password_confirmation" :type="show ? 'password' : 'text'"
                         value="" autocomplete="on" required
-                        class="appearance-none block w-full px-3 py-2 border {{ $errors->has('password_confirmation') ? 'border-red-500' : 'border-gray-300' }} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        class="block w-full p-0 text-gray-900 placeholder-gray-500 border-0 focus:ring-0 sm:text-sm">
                     <div class="absolute inset-y-0 right-0 flex items-center pr-3 text-sm leading-5 cursor-pointer"
                         x-on:click="show = !show">
 
