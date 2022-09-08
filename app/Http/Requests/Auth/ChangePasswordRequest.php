@@ -27,7 +27,7 @@ class ChangePasswordRequest extends FormRequest
     public function rules()
     {
         return [
-            'oldpassword' => [
+            'currentpassword' => [
                 'required',
                 Password::defaults(),
                 new ChangePasswordMatch,
