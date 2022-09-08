@@ -29,12 +29,15 @@ class Register extends Controller
     {
         $account = collect($request->validated())->toArray();
 
-        $user = User::create($account);
+        $create = User::create($account);
+
+        $user = User::find($create->id);
+        $user->markEmailAsVerified();
 
         AuthenticationHelper::attempt(collect($account));
 
         return redirect()->route('web.index')->with([
-            'registerSuccess' => 'Account ' . $user->email . ' has been created.',
+            'successMessage' => 'Account ' . $user->email . ' has been created.',
         ]);
     }
 }

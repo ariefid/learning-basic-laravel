@@ -33,14 +33,14 @@ class Authenticate extends Controller
 
         if (!$auth) {
             return redirect()->route('web.account.login')->withInput($request->input())->withErrors([
-                'loginFailed' => 'Account information doesn\'t match in our database.',
+                'errorMessage' => 'Account information doesn\'t match in our database.',
             ]);
         }
 
         $user = Auth::user();
 
         return redirect()->route('web.index')->with([
-            'loginSuccess' => 'Welcome back, ' . ($user->username ?? $user->email),
+            'successMessage' => 'Welcome back, ' . ($user->username ?? $user->email),
         ]);
     }
 
@@ -54,7 +54,7 @@ class Authenticate extends Controller
         AuthenticationHelper::logoutCurrentDevice();
 
         return redirect()->route('web.account.login')->with([
-            'logoutSuccess' => 'You have logged out successfully.',
+            'successMessage' => 'You have logged out successfully.',
         ]);
     }
 }

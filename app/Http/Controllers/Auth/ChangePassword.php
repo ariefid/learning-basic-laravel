@@ -6,6 +6,7 @@ use App\Helpers\AuthenticationHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class ChangePassword extends Controller
 {
@@ -27,15 +28,15 @@ class ChangePassword extends Controller
      */
     public function update(ChangePasswordRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $password = collect($request->validated());
+        $account = $request->validated();
 
-        $user = User::query()->find($request->user()->id);
-        $user->update(['password' => $password->only(['newpassword'])]);
+        $user = User::find($request->user()->id);
+        $user->update(['password' => $account['newpassword']]);
 
         AuthenticationHelper::logoutCurrentDevice();
 
         return redirect()->route('web.account.login')->with([
-            'changePasswordSuccess' => 'Password has been changed. Please, login again.',
+            'successMessage' => 'Password has been changed. Please, login again.',
         ]);
     }
 }
