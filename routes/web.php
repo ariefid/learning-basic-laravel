@@ -1,11 +1,12 @@
 <?php
 
+use App\Http\Controllers\Dash\Todo;
 use App\Helpers\AuthenticationHelper;
-use App\Http\Controllers\Auth\Authenticate;
-use App\Http\Controllers\Auth\ChangePassword;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\Register;
 use App\Http\Controllers\Dash\Dashboard;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\Authenticate;
+use App\Http\Controllers\Auth\ChangePassword;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +21,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['prefix' => null, 'middleware' => ['prevent-back-history'], 'as' => 'web.'], function () {
     Route::match(['get', 'head'], null, [Dashboard::class, 'index'])->middleware(['auth', 'verified:web.account.notverified'])->name('index');
+
+    Route::resource('todos', Todo::class, ['middleware' => ['auth', 'verified:web.account.notverified'], 'as' => null])->parameters([
+        'todos' => 'id',
+    ])->scoped(['id' => 'uuid']);
 
     Route::group(['prefix' => 'account', 'middleware' => [], 'as' => 'account.'], function () {
         Route::match(['get', 'head'], 'register', [Register::class, 'viewRegister'])->middleware(['guest'])->name('register');
@@ -43,10 +48,6 @@ Route::group(['prefix' => null, 'middleware' => ['prevent-back-history'], 'as' =
                 'errorMessage' => 'You must verify your account.',
             ]);
         })->middleware([])->name('notverified');
-
-        Route::fallback(function () {
-            return response()->view('errors.404');
-        });
     });
 
     Route::fallback(function () {
