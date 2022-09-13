@@ -3,7 +3,7 @@
 ## About
 
 <p>The source code is for learning laravel framework. Build todo application with Eloquent Relationships.</p>
-<p>I'm using Laravel framework 9.28.</p>
+<p>I'm using Laravel framework 9.29.</p>
 
 ## Requirements
 
