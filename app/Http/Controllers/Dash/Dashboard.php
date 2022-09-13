@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Dash;
 
+use App\Enums\TodoState;
 use App\Http\Controllers\Controller;
+use App\Models\Todo;
 
 class Dashboard extends Controller
 {
@@ -13,6 +15,8 @@ class Dashboard extends Controller
      */
     public function index(): \Illuminate\Http\Response
     {
-        return response()->view('dash.dashboard');
+        $todos = Todo::query()->whereIsPrivate(false)->whereState(TodoState::PUBLISH)->cursorPaginate();
+
+        return response()->view('dash.dashboard', compact('todos'));
     }
 }
