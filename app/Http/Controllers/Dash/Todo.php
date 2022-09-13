@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Dash;
 
+use App\Enums\TodoState;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Dash\StoreTodoRequest;
+use App\Http\Requests\Dash\UpdateTodoRequest;
+use App\Models\Todo as TodoModel;
+use App\Models\User;
 
 class Todo extends Controller
 {
@@ -14,7 +18,9 @@ class Todo extends Controller
      */
     public function index(): \Illuminate\Http\Response
     {
-        return response()->view('dash.todo.index');
+        $todos = TodoModel::query()->whereUserId(auth()->user()->id)->cursorPaginate();
+
+        return response()->view('dash.todos.index', compact('todos'));
     }
 
     /**
@@ -24,18 +30,29 @@ class Todo extends Controller
      */
     public function create(): \Illuminate\Http\Response
     {
-        return response()->view('dash.todo.create');
+        $todoState = TodoState::cases();
+
+        return response()->view('dash.todos.create', compact('todoState'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  StoreTodoRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(StoreTodoRequest $request): \Illuminate\Http\RedirectResponse
     {
-        //
+        $todo = User::find($request->user()->id);
+
+        $todo->todos()->create($request->only([
+            'name',
+            'description',
+            'is_private',
+            'state',
+        ]));
+
+        return redirect()->back()->with(['successMessage' => 'Todo has been created.']);
     }
 
     /**
@@ -46,7 +63,9 @@ class Todo extends Controller
      */
     public function show($id): \Illuminate\Http\Response
     {
-        return response()->view('dash.todo.show', compact('id'));
+        $todo = TodoModel::query()->whereUserId(auth()->user()->id)->whereUuid($id)->firstOrFail();
+
+        return response()->view('dash.todos.show', compact('todo'));
     }
 
     /**
@@ -57,29 +76,46 @@ class Todo extends Controller
      */
     public function edit($id): \Illuminate\Http\Response
     {
-        return response()->view('dash.todo.edit');
+        $todo = TodoModel::query()->whereUserId(auth()->user()->id)->whereUuid($id)->firstOrFail();
+
+        $todoState = TodoState::cases();
+
+        return response()->view('dash.todos.edit', compact('todo', 'todoState'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  UpdateTodoRequest  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(UpdateTodoRequest $request, $id): \Illuminate\Http\RedirectResponse
     {
-        //
+        $todo = TodoModel::query()->whereUserId($request->user()->id)->whereUuid($id)->firstOrFail();
+
+        $todo->update($request->only([
+            'name',
+            'description',
+            'is_private',
+            'state',
+        ]));
+
+        return redirect()->back()->with(['successMessage' => 'Todo has been updated.']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy($id)
+    public function destroy($id): \Illuminate\Http\RedirectResponse
     {
-        //
+        $todo = TodoModel::query()->whereUserId(auth()->user()->id)->whereUuid($id)->firstOrFail();
+
+        $todo->delete();
+
+        return redirect()->back()->with(['successMessage' => 'Todo has been deleted.']);
     }
 }
